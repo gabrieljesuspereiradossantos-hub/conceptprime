@@ -812,6 +812,30 @@ footer{padding:60px 0 30px;background:var(--ivory);border-top:1px solid var(--bo
 
 /* Remove old conflicting bg/border overrides */
 .btn-dk:hover{ background: linear-gradient(135deg,rgba(184,148,58,0.65) 0%,rgba(138,108,32,0.7) 50%,rgba(184,148,58,0.6) 100%); border-color:rgba(184,148,58,0.55); filter:none; transform:translateY(-2px); }
+
+/* Quiet, tactile controls: keep Concept Prime's palette while reducing glare. */
+.btn-dk,.btn-gh,.n-cta,.btn-f,.bk-back-btn,.mob a[onclick*="booking"],.mob button[onclick*="booking"]{
+  min-height:44px;
+  border-radius:14px;
+  font-size:10px;
+  font-weight:500;
+  letter-spacing:.22em;
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
+  transition:transform 240ms cubic-bezier(.23,1,.32,1),box-shadow 240ms ease,background-color 240ms ease,border-color 240ms ease,color 240ms ease;
+}
+.btn-dk,.n-cta{background:rgba(30,27,24,.88);border-color:rgba(184,148,58,.32);box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 7px 19px rgba(20,18,16,.12);}
+.btn-dk:hover,.n-cta:hover{background:rgba(42,36,29,.94);border-color:rgba(184,148,58,.54);box-shadow:inset 0 1px 0 rgba(255,255,255,.17),0 9px 22px rgba(20,18,16,.16);filter:none;transform:translateY(-1px);}
+.btn-gh:hover{transform:translateY(-1px);filter:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 8px 20px rgba(20,18,16,.09);}
+.btn-dk::after,.n-cta::after,.btn-gh::after,.btn-f::after{opacity:.35;}
+.btn-prev:hover,.btn-next:hover,.btn-send:hover{transform:translateY(-1px);filter:none;}
+.btn-f:hover,.bk-back-btn:hover{transform:translateY(-1px);}
+.wa:hover,.ig-btn:hover{transform:translateY(-1px) scale(1.02);}
+.btn-dk:active,.btn-gh:active,.n-cta:active,.btn-f:active,.bk-back-btn:active,.wa:active,.ig-btn:active,.man-arr:active,.v-play:active{transform:scale(.97);transition-duration:110ms;}
+.man-arr:active{transform:translateY(-50%) scale(.97);}
+.btn-dk:focus-visible,.btn-gh:focus-visible,.n-cta:focus-visible,.btn-f:focus-visible,.bk-back-btn:focus-visible,.wa:focus-visible,.ig-btn:focus-visible,.man-arr:focus-visible,.v-play:focus-visible,.mob-x:focus-visible,.hero-slide-dot:focus-visible{outline:2px solid var(--gold);outline-offset:4px;}
+@media(hover:none){.btn-dk:hover,.n-cta:hover,.btn-gh:hover,.btn-f:hover,.bk-back-btn:hover,.wa:hover,.ig-btn:hover{transform:none;}}
+@media(prefers-reduced-motion:reduce){.btn-dk,.btn-gh,.n-cta,.btn-f,.bk-back-btn,.wa,.ig-btn{transition:none;}}
 </style>
 </head>
 <body>
