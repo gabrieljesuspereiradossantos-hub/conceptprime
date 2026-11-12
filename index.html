@@ -920,6 +920,8 @@ html.no-intro #intro{display:none}
 .hc-media{position:absolute;inset:0 0 0 auto;width:60%;z-index:-2;overflow:hidden}
 .hc-media picture{position:absolute;inset:-6% 0;display:block;transform-origin:40% 50%;translate:0 var(--hc-py,0px);animation:hc-drift 28s ease-in-out infinite alternate;will-change:scale,translate}
 .hc-media img{display:block;width:100%;height:100%;object-fit:cover;object-position:28% 56%}
+.hc-video{position:absolute;inset:-6% 0;width:100%;height:112%;object-fit:cover;object-position:28% 56%;opacity:0;transition:opacity 700ms ease;transform-origin:40% 50%;translate:0 var(--hc-py,0px);animation:hc-drift 28s ease-in-out infinite alternate;pointer-events:none}
+.hc-video.is-on{opacity:1}
 @keyframes hc-drift{from{scale:1}to{scale:1.07}}
 .hc-veil{position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(90deg,rgb(var(--onyx-rgb)) 0%,rgb(var(--onyx-rgb)) 40%,rgb(var(--onyx-rgb)/.7) 49%,rgb(var(--onyx-rgb)/0) 66%),linear-gradient(to top,rgb(var(--onyx-rgb)/.55) 0%,rgb(var(--onyx-rgb)/0) 34%)}
 .hc-content{position:relative;z-index:1;padding:calc(var(--navh) + 24px) 6vw 56px}
@@ -977,7 +979,7 @@ html.is-loading .hc-enter,html.is-loading .hc-media,html.is-loading .hc-media im
 @media(max-width:1024px){
   .hc-media{position:relative;inset:auto;width:100%;flex:1 1 auto;min-height:220px;z-index:0}
   .hc-media::after{content:"";position:absolute;inset:auto 0 0 0;height:45%;background:linear-gradient(to top,rgb(var(--onyx-rgb)) 0%,rgb(var(--onyx-rgb)/0) 100%);pointer-events:none}
-  .hc-media img{object-position:30% 48%}
+  .hc-media img,.hc-video{object-position:30% 48%}
   .hc-veil,.hc-callout,.hc-facts{display:none}
   .hc-content{margin-top:-48px;padding:0 5vw 32px}
   .hc-title{margin-top:18px}
@@ -1090,6 +1092,7 @@ html:not(.js) .fan__bar{display:none}
   #intro{transition:opacity 200ms ease!important}
   #intro.is-out{clip-path:none;opacity:0}
   .i-bg video{display:none}
+  .hc-video{display:none}
   .hc-enter,.hc-media,.hc-media img,.hc-callout,.hc-media picture{animation:none!important;opacity:1;transform:none;clip-path:none;translate:none}
   [data-sobe] .sobe-palavra{transform:none!important;transition:none!important}
   [data-wipe]{clip-path:none!important;transition:none!important}
@@ -1127,9 +1130,9 @@ html:not(.js) .fan__bar{display:none}
 <div id="intro" aria-hidden="true">
   <div class="i-bg">
     <img src="assets/media/recepcao-900.webp" alt="" width="540" height="945">
-    <video muted loop playsinline preload="auto" poster="assets/media/recepcao-900.webp" data-intro-video>
-      <source src="assets/media/recepcao-loop.webm" type="video/webm">
+    <video muted autoplay loop playsinline webkit-playsinline disablepictureinpicture preload="auto" poster="assets/media/recepcao-900.webp" data-intro-video>
       <source src="assets/media/recepcao-loop.mp4" type="video/mp4">
+      <source src="assets/media/recepcao-loop.webm" type="video/webm">
     </video>
   </div>
   <div class="i-mark">
@@ -1160,6 +1163,7 @@ html:not(.js) .fan__bar{display:none}
     var saveData = navigator.connection && navigator.connection.saveData;
     var video = intro.querySelector('[data-intro-video]');
     if (reduce || saveData) { video.remove(); } else {
+      video.muted = true; video.defaultMuted = true; video.playsInline = true;
       video.addEventListener('playing', function () { video.classList.add('is-on'); });
       var p = video.play(); if (p && p.catch) p.catch(function () {});
     }
@@ -1232,6 +1236,12 @@ html:not(.js) .fan__bar{display:none}
           <source srcset="assets/media/recepcao-1344.webp" type="image/webp">
           <img src="assets/media/recepcao-1344.jpg" alt="Recepção do Concept Prime Studio: balcão de madeira ripada com luz embaixo, parede de mármore e o letreiro dourado CP" width="768" height="1344" fetchpriority="high">
         </picture>
+        <!-- o loop da recepção por cima da foto (como no hero da Solenime): a foto é o pôster e o plano B.
+             Não toca com "reduzir movimento" nem com economia de dados; pausa quando o hero sai da tela. -->
+        <video class="hc-video" muted autoplay loop playsinline webkit-playsinline disablepictureinpicture preload="metadata" poster="assets/media/recepcao-900.webp" aria-hidden="true" tabindex="-1" data-hero-video>
+          <source src="assets/media/recepcao-loop.mp4" type="video/mp4">
+          <source src="assets/media/recepcao-loop.webm" type="video/webm">
+        </video>
       </div>
       <div class="hc-veil" aria-hidden="true"></div>
       <p class="hc-callout"><span class="hc-dot" aria-hidden="true"></span><span class="hc-card"><strong>Nossa recepção</strong><span>São Bernardo do Campo · SP</span></span></p>
@@ -2068,6 +2078,27 @@ function sendWA() {
     var paint=function(){ hraf=0; var h=media.offsetHeight; if(scrollY>h*1.2)return; media.style.setProperty('--hc-py',Math.min(scrollY*.12,h*.06).toFixed(1)+'px'); };
     addEventListener('scroll',function(){ if(!hraf) hraf=requestAnimationFrame(paint); },{passive:true});
     paint();
+  }
+
+  /* 4b. Vídeo do hero: começa quando a tela de abertura sai (ou já no load, sem abertura), aparece com fade
+     só quando de fato toca (nunca um quadro preto) e pausa fora da tela. Se o celular recusar o autoplay
+     (modo de economia de energia do iPhone, por exemplo), fica a foto. */
+  var hv=document.querySelector('[data-hero-video]');
+  if(hv){
+    var saveData=navigator.connection&&navigator.connection.saveData;
+    if(reduce||saveData){ hv.remove(); } else {
+      hv.muted=true; hv.defaultMuted=true; hv.playsInline=true;
+      hv.addEventListener('playing',function(){ hv.classList.add('is-on'); });
+      var inView=true;
+      var tryPlay=function(){ if(!inView||document.documentElement.classList.contains('is-loading'))return; var p=hv.play(); if(p&&p.catch)p.catch(function(){}); };
+      if(hasIO){ new IntersectionObserver(function(es){ inView=es[0].isIntersecting; if(inView)tryPlay(); else hv.pause(); }).observe(hv.parentElement); }
+      // espera a abertura sair (a classe is-loading some do <html>)
+      if(document.documentElement.classList.contains('is-loading')){
+        new MutationObserver(function(m,o){ if(!document.documentElement.classList.contains('is-loading')){ o.disconnect(); hv.preload='auto'; tryPlay(); } }).observe(document.documentElement,{attributes:true,attributeFilter:['class']});
+      } else { hv.preload='auto'; tryPlay(); }
+      // no iPhone, o primeiro toque na tela libera vídeos que o navegador segurou
+      addEventListener('touchstart',function(){ if(hv.paused&&inView)tryPlay(); },{once:true,passive:true});
+    }
   }
 
   /* 5. Antes e depois arrastável (Dra. Paula): arraste, toque num ponto ou setas do teclado; um aceno ao aparecer */
