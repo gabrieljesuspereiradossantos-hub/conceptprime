@@ -250,6 +250,7 @@ footer{padding:60px 0 30px;background:var(--ivory);border-top:1px solid var(--bo
 .ft-hd{font-size:7.5px;letter-spacing:.5em;text-transform:uppercase;color:rgba(184,148,58,.5);margin-bottom:16px}
 .ft-ul{list-style:none;display:flex;flex-direction:column;gap:10px}
 .ft-ul a{font-size:12px;color:var(--muted);transition:color .3s;letter-spacing:.03em}
+.ft-ul li{font-size:12px;color:var(--muted);letter-spacing:.03em}
 .ft-ul a:hover{color:var(--gold)}
 .ft-bot{padding-top:22px;border-top:1px solid rgba(184,148,58,.1);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
 .ft-bot p{font-size:9px;color:rgba(154,142,126,.48);letter-spacing:.1em}
@@ -851,6 +852,257 @@ footer{padding:60px 0 30px;background:var(--ivory);border-top:1px solid var(--bo
 .hbg:focus-visible{outline:2px solid var(--gold-d);outline-offset:4px;border-radius:4px;}
 .h-ey{animation-delay:.15s}.h-logo{animation-delay:.3s}.h-t1{animation-delay:.45s}.h-sub{animation-delay:.6s}.h-btns{animation-delay:.75s}.h-sc{animation-delay:1s}
 @media(prefers-reduced-motion:reduce){.h-ey,.h-logo,.h-t1,.h-sub,.h-btns,.h-sc{animation:none;opacity:1;transform:none;}.rv{opacity:1;transform:none;transition:none;}}
+
+/* ==========================================================================
+   MOTION DAY+ — os mesmos elementos dos projetos Clínica Solenime e Dra. Paula Moura,
+   adaptados ao Concept Prime (Cormorant + Montserrat, marfim, ônix e dourado).
+   Curvas do Solenime: --ease-out (saída) e --ease-io (entrada e saída). Só transform, opacity e clip-path.
+   Tudo para com "reduzir movimento" (bloco no fim).
+   ========================================================================== */
+:root{
+  --ease-out:cubic-bezier(.23,1,.32,1);
+  --ease-io:cubic-bezier(.77,0,.175,1);
+  --onyx-rgb:20 18 16;
+  --navh:90px;
+}
+@media(max-width:1024px){:root{--navh:74px}}
+
+/* O fade-in de cada seção do site antigo sai (Solenime, conceito v2): o movimento fica na entrada do hero,
+   nos títulos que sobem, nas fotos que abrem e nos momentos de rolagem. */
+.rv{opacity:1;transform:none;transition:none}
+
+/* ---------- 1. TELA DE ABERTURA: o vídeo da recepção ao fundo, o monograma e o nome surgindo
+   (Hero Shutter Text, 21st.dev, como na Dra. Paula); sai como cortina para cima (Solenime).
+   Uma vez por sessão, no máximo 4 s; sem JavaScript ela nem aparece. */
+#intro{position:fixed;inset:0;z-index:10000;isolation:isolate;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--onyx);color:var(--ivory);clip-path:inset(0 0 0 0);transition:clip-path 900ms var(--ease-io);touch-action:none;overscroll-behavior:contain}
+#intro.is-out{clip-path:inset(0 0 100% 0);pointer-events:none}
+html.is-loading,html.is-loading body{overflow:hidden}
+.i-bg{position:absolute;inset:0;z-index:-1;overflow:hidden}
+.i-bg img,.i-bg video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:30% 52%}
+.i-bg video{opacity:0;transition:opacity 700ms ease}
+.i-bg video.is-on{opacity:1}
+.i-bg::after{content:"";position:absolute;inset:0;background:radial-gradient(120% 90% at 50% 45%,rgb(var(--onyx-rgb)/.42) 0%,rgb(var(--onyx-rgb)/.78) 100%)}
+#intro .i-mark{display:flex;flex-direction:column;align-items:center;transition:transform 800ms var(--ease-io),opacity 500ms ease}
+#intro.is-out .i-mark{transform:translateY(-32px);opacity:0}
+#intro .i-logo{width:84px;height:84px;object-fit:contain;opacity:0;transform:scale(.92);transition:opacity 700ms var(--ease-out),transform 900ms var(--ease-out);filter:drop-shadow(0 6px 24px rgba(0,0,0,.35))}
+#intro .i-word{margin-top:22px;display:flex;flex-wrap:wrap;justify-content:center;font:italic 400 clamp(52px,8vw,108px)/1.02 'Cormorant Garamond',Georgia,serif;letter-spacing:-.005em}
+#intro .sh{position:relative;display:inline-block;overflow:hidden;padding:0 .03em .1em}
+#intro .sh-main{display:inline-block;opacity:0;filter:blur(10px)}
+#intro .sh-s{position:absolute;inset:0 .03em .1em;opacity:0;pointer-events:none}
+#intro .sh-t{color:var(--gold-l);clip-path:polygon(0 0,100% 0,100% 35%,0 35%)}
+#intro .sh-m{color:var(--gold);clip-path:polygon(0 35%,100% 35%,100% 65%,0 65%)}
+#intro .sh-b{color:var(--gold-l);clip-path:polygon(0 65%,100% 65%,100% 100%,0 100%)}
+@keyframes sh-in{to{opacity:1;filter:blur(0)}}
+@keyframes sh-lr{0%{transform:translateX(-100%);opacity:0}50%{opacity:1}100%{transform:translateX(100%);opacity:0}}
+@keyframes sh-rl{0%{transform:translateX(100%);opacity:0}50%{opacity:1}100%{transform:translateX(-100%);opacity:0}}
+#intro.is-ready .sh-main{animation:sh-in 800ms ease forwards;animation-delay:calc(var(--i) * 40ms + 300ms)}
+#intro.is-ready .sh-t{animation:sh-lr 700ms ease-in-out both;animation-delay:calc(var(--i) * 40ms)}
+#intro.is-ready .sh-m{animation:sh-rl 700ms ease-in-out both;animation-delay:calc(var(--i) * 40ms + 100ms)}
+#intro.is-ready .sh-b{animation:sh-lr 700ms ease-in-out both;animation-delay:calc(var(--i) * 40ms + 200ms)}
+#intro .i-small{margin-top:10px;font:500 12px/1 'Montserrat',sans-serif;letter-spacing:.42em;margin-right:-.42em;text-transform:uppercase;color:var(--gold-l);opacity:0;transition:opacity 700ms ease 400ms}
+#intro .i-line{margin-top:28px;width:128px;height:1px;background:rgba(212,169,78,.3);overflow:hidden}
+#intro .i-line i{display:block;height:100%;background:var(--gold-l);transform:scaleX(0);transform-origin:left;transition:transform 1400ms var(--ease-out) 300ms}
+#intro .i-foot{position:absolute;bottom:40px;font:500 11px/1 'Montserrat',sans-serif;letter-spacing:.3em;margin-right:-.3em;text-transform:uppercase;color:rgba(245,240,232,.86);opacity:0;transition:opacity 700ms ease 500ms}
+#intro.is-ready .i-logo{opacity:1;transform:none}
+#intro.is-ready .i-small,#intro.is-ready .i-foot{opacity:1}
+#intro.is-ready .i-line i{transform:scaleX(.72)}
+#intro.is-done .i-line i{transform:scaleX(1);transition-duration:320ms;transition-delay:0ms}
+#intro.is-out .i-foot{opacity:0;transition-delay:0ms;transition-duration:300ms}
+html.no-intro #intro{display:none}
+
+/* ---------- 2. HERO: a recepção num quadro de cantos arredondados (padrão Solenime/Paula), véu de ônix
+   da esquerda, título em três linhas com a do meio em itálico dourado, anotação e destaques. */
+/* o hero ocupa toda a parte de cima, de ponta a ponta e sem cantos arredondados; o menu fica por cima dele */
+#hero.hc{display:block;min-height:620px;height:100vh;height:100svh;padding:0;background:var(--onyx);overflow:hidden}
+.hc-frame{position:relative;isolation:isolate;overflow:hidden;height:100%;border-radius:0;background:rgb(var(--onyx-rgb));display:flex;flex-direction:column;justify-content:flex-end}
+/* faixa escura no alto, para o menu claro ler sobre o teto iluminado da recepção */
+.hc-frame::before{content:"";position:absolute;inset:0 0 auto 0;height:180px;z-index:1;pointer-events:none;background:linear-gradient(to bottom,rgb(var(--onyx-rgb)/.62) 0%,rgb(var(--onyx-rgb)/0) 100%)}
+.hc-media{position:absolute;inset:0 0 0 auto;width:60%;z-index:-2;overflow:hidden}
+.hc-media picture{position:absolute;inset:-6% 0;display:block;transform-origin:40% 50%;translate:0 var(--hc-py,0px);animation:hc-drift 28s ease-in-out infinite alternate;will-change:scale,translate}
+.hc-media img{display:block;width:100%;height:100%;object-fit:cover;object-position:28% 56%}
+@keyframes hc-drift{from{scale:1}to{scale:1.07}}
+.hc-veil{position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(90deg,rgb(var(--onyx-rgb)) 0%,rgb(var(--onyx-rgb)) 40%,rgb(var(--onyx-rgb)/.7) 49%,rgb(var(--onyx-rgb)/0) 66%),linear-gradient(to top,rgb(var(--onyx-rgb)/.55) 0%,rgb(var(--onyx-rgb)/0) 34%)}
+.hc-content{position:relative;z-index:1;padding:calc(var(--navh) + 24px) 6vw 56px}
+.hc-text{max-width:600px;color:var(--ivory)}
+.hc-badge{display:inline-flex;align-items:center;gap:12px;margin:0;font:500 12px/1.2 'Montserrat',sans-serif;letter-spacing:.2em;text-transform:uppercase;color:rgba(245,240,232,.9)}
+.hc-badge img{width:30px;height:30px;object-fit:contain}
+.hc-badge b{font-weight:500;color:var(--gold-l);padding-left:12px;border-left:1px solid rgba(255,255,255,.22)}
+.hc-title{margin-top:26px;font:400 clamp(44px,5.3vw,84px)/1 'Cormorant Garamond',Georgia,serif;letter-spacing:-.01em;color:var(--ivory)}
+.hc-title>span,.hc-title>em{display:block}
+.hc-title em{font-style:italic;color:var(--gold-l)}
+.hc-lead{margin-top:22px;max-width:30rem;font:400 16px/1.75 'Montserrat',sans-serif;letter-spacing:.02em;color:rgba(245,240,232,.86)}
+.hc-btns{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
+.hc .btn-dk{background:linear-gradient(135deg,rgba(228,185,90,.95) 0%,rgba(212,169,78,.92) 50%,rgba(184,148,58,.95) 100%);color:var(--onyx);border-color:rgba(212,169,78,.6);font-weight:600}
+.hc .btn-dk:hover{background:linear-gradient(135deg,rgba(236,196,106,.98) 0%,rgba(222,180,88,.95) 100%);color:var(--onyx);border-color:rgba(232,192,100,.8)}
+.hc .btn-gh{background:rgba(255,255,255,.04);color:var(--ivory);border-color:rgba(245,240,232,.38);box-shadow:none}
+.hc .btn-gh::before,.hc .btn-gh::after{display:none}
+.hc .btn-gh:hover{background:rgba(255,255,255,.1);color:var(--ivory);border-color:rgba(245,240,232,.7)}
+.btn-arrow{width:14px;height:14px;transition:transform 200ms var(--ease-out)}
+@media(hover:hover) and (pointer:fine){.btn-dk:hover .btn-arrow,.btn-gh:hover .btn-arrow{transform:translateX(3px)}}
+.hc-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px;margin:42px 0 0;padding-top:18px;border-top:1px solid rgba(255,255,255,.2)}
+.hc-facts dt{font:italic 400 23px/1.15 'Cormorant Garamond',Georgia,serif;color:var(--ivory)}
+.hc-facts dd{margin:5px 0 0;font:400 13px/1.4 'Montserrat',sans-serif;color:rgba(245,240,232,.72)}
+.hc-callout{position:absolute;z-index:1;margin:0;right:6%;bottom:30%;display:flex;align-items:center;color:var(--ivory);font:400 14px/1.3 'Montserrat',sans-serif}
+.hc-dot{position:relative;width:14px;height:14px;border-radius:50%;flex:none;background:var(--gold-l);box-shadow:0 0 0 6px rgba(212,169,78,.28)}
+.hc-dot::after{content:"";position:absolute;left:100%;top:50%;width:28px;height:1px;background:rgba(255,255,255,.6)}
+.hc-card{margin-left:28px;display:grid;gap:3px;padding:12px 16px;border-radius:14px;background:rgb(var(--onyx-rgb)/.82);border:1px solid rgba(255,255,255,.2);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.hc-card strong{font-weight:500}
+.hc-card span{font-size:13px;color:rgba(245,240,232,.85)}
+.hc :focus-visible{outline:2px solid var(--gold-l);outline-offset:4px}
+#view-home nav:not(.s) .n-logo-t b{color:var(--ivory)}
+#view-home nav:not(.s) .n-logo-t small{color:rgba(245,240,232,.78)}
+#view-home nav:not(.s) .n-links a{color:var(--ivory);opacity:.9}
+#view-home nav:not(.s) .n-links a:hover{color:var(--gold-l);opacity:1}
+#view-home nav:not(.s) .hbg span{background:var(--ivory)}
+#view-home nav:not(.s) .hbg:focus-visible{outline-color:var(--gold-l)}
+
+/* entrada em cascata do Solenime: sobe 16 px com fade, 60 ms entre um e outro; a foto abre de baixo para cima
+   (clip-path) e assenta de 1,06 para 1. Enquanto a abertura está na frente, tudo espera. */
+@keyframes enter-up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes reveal-clip{from{clip-path:inset(100% 0 0 0)}to{clip-path:inset(0 0 0 0)}}
+@keyframes hero-assenta{from{transform:scale(1.06)}to{transform:none}}
+.hc-enter{animation:enter-up 700ms var(--ease-out) both;animation-delay:calc(var(--i,0) * 60ms + 80ms)}
+.hc-media{animation:reveal-clip 900ms var(--ease-io) 150ms both}
+.hc-media img{animation:hero-assenta 1600ms var(--ease-out) 150ms both}
+.hc-callout{animation:enter-up 700ms var(--ease-out) 750ms both}
+html.is-loading .hc-enter,html.is-loading .hc-media,html.is-loading .hc-media img,html.is-loading .hc-callout{animation-play-state:paused}
+
+/* desktop estreito: o texto ocupa mais, o véu vai mais longe e os destaques saem */
+@media(min-width:1025px) and (max-width:1279px){
+  .hc-text{max-width:520px}
+  .hc-facts{display:none}
+  .hc-veil{background:linear-gradient(90deg,rgb(var(--onyx-rgb)) 0%,rgb(var(--onyx-rgb)) 48%,rgb(var(--onyx-rgb)/.7) 58%,rgb(var(--onyx-rgb)/0) 76%),linear-gradient(to top,rgb(var(--onyx-rgb)/.55) 0%,rgb(var(--onyx-rgb)/0) 34%)}
+}
+/* tablet e celular: a foto em cima, o texto embaixo sobre o ônix */
+@media(max-width:1024px){
+  .hc-media{position:relative;inset:auto;width:100%;flex:1 1 auto;min-height:220px;z-index:0}
+  .hc-media::after{content:"";position:absolute;inset:auto 0 0 0;height:45%;background:linear-gradient(to top,rgb(var(--onyx-rgb)) 0%,rgb(var(--onyx-rgb)/0) 100%);pointer-events:none}
+  .hc-media img{object-position:30% 48%}
+  .hc-veil,.hc-callout,.hc-facts{display:none}
+  .hc-content{margin-top:-48px;padding:0 5vw 32px}
+  .hc-title{margin-top:18px}
+}
+@media(max-width:640px){
+  .hc-content{padding:0 24px 28px}
+  .hc-title{font-size:clamp(38px,11vw,46px)}
+  .hc-lead{font-size:15px;margin-top:16px}
+  .hc-btns{margin-top:22px}
+  .hc-btns>*{width:100%}
+  .hc-badge{font-size:11px;letter-spacing:.16em}
+  .hc-badge__name{display:none}
+  .hc-badge b{padding-left:0;border-left:0}
+}
+
+/* ---------- 3. TÍTULOS QUE SOBEM palavra a palavra de dentro de uma máscara, uma vez (Solenime) */
+.sobe-mask{display:inline-block;overflow-y:clip;padding:0 .06em .16em;margin:0 -.06em -.16em;vertical-align:top}
+.sobe-palavra{display:inline-block}
+[data-sobe="espera"] .sobe-palavra{transform:translateY(110%)}
+[data-sobe="sim"] .sobe-palavra{transform:none;transition:transform 900ms var(--ease-out);transition-delay:calc(var(--i,0) * 80ms)}
+
+/* ---------- 4. FOTOS QUE ABREM de baixo para cima ao entrar na tela e assentam (Solenime) */
+[data-wipe="espera"]{clip-path:inset(100% 0 0 0)}
+[data-wipe="sim"]{clip-path:inset(0 0 0 0);transition:clip-path 1000ms var(--ease-io)}
+[data-wipe] img,[data-wipe] canvas{transition:transform 1400ms var(--ease-out)}
+[data-wipe="espera"] img{transform:scale(1.12)}
+
+/* ---------- 5. WORD-HIGHLIGHT: as palavras da frase acendem (22% → 100%) conforme ela passa pela tela */
+[data-wh] [data-w]{opacity:.22;transition:opacity 120ms linear}
+html:not(.js) [data-wh] [data-w]{opacity:1}
+
+/* ---------- 6. ANTES E DEPOIS ARRASTÁVEL ("Image Compare" do 21st.dev, como na Dra. Paula) */
+.ba-grid.ba-cmp{gap:16px}
+.ba{position:relative;aspect-ratio:3/4;border-radius:var(--radius-md);overflow:hidden;background:var(--onyx);touch-action:pan-y;cursor:ew-resize;user-select:none;-webkit-user-select:none;isolation:isolate}
+.ba__layer{position:absolute;inset:0;overflow:hidden}
+.ba__layer img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 25%;pointer-events:none;-webkit-user-drag:none}
+.ba__before{clip-path:inset(0 calc(100% - var(--pos,50%)) 0 0);z-index:1}
+.ba__handle{position:absolute;top:0;bottom:0;left:var(--pos,50%);z-index:2;width:2px;margin-left:-1px;background:rgba(255,255,255,.92);pointer-events:none}
+.ba__knob{position:absolute;top:50%;left:50%;display:grid;place-items:center;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;background:rgba(250,250,248,.96);color:var(--onyx);box-shadow:0 8px 24px -8px rgba(20,18,16,.5);transition:transform 180ms ease}
+.ba.is-dragging .ba__knob{transform:scale(1.08)}
+.ba__tag{position:absolute;top:14px;z-index:3;padding:5px 11px;border-radius:999px;background:rgba(20,18,16,.68);color:var(--ivory);font:500 11px/1.3 'Montserrat',sans-serif;letter-spacing:.14em;text-transform:uppercase;pointer-events:none}
+.ba__tag--l{left:14px}
+.ba__tag--r{right:14px;background:rgba(184,148,58,.92);color:var(--white)}
+.ba__range{position:absolute;inset:0;z-index:4;width:100%;height:100%;margin:0;opacity:0;cursor:ew-resize;pointer-events:none}
+.ba:has(.ba__range:focus-visible){outline:2px solid var(--gold);outline-offset:3px}
+.ba-case{display:flex;flex-direction:column;gap:12px;min-width:0}
+.ba-case__name{font:400 20px/1.2 'Cormorant Garamond',Georgia,serif;color:var(--ink)}
+.ba.is-hint .ba__before,.ba.is-hint .ba__handle{transition:clip-path 700ms cubic-bezier(.4,0,.2,1),left 700ms cubic-bezier(.4,0,.2,1)}
+
+/* ---------- 7. GALERIA EM LEQUE ("Custom Spaces" do MotionSites e "Image Fan Carousel" do 21st.dev, como na Dra. Paula) */
+#gallery{overflow-x:clip}
+.fan{--cw:360px;--step:58%;--tilt:7deg;position:relative}
+.fan__stage{position:relative;height:calc(var(--cw) * 1.25 + 56px);margin-inline:auto;touch-action:pan-y;outline:none;user-select:none;-webkit-user-select:none}
+.fan__stage:focus-visible{outline:2px solid var(--gold);outline-offset:8px;border-radius:var(--radius-md)}
+.fan__card{--a:min(max(var(--d),-3),3);--ad:max(var(--a),calc(var(--a) * -1));position:absolute;left:50%;top:24px;margin:0;width:var(--cw);aspect-ratio:4/5;margin-left:calc(var(--cw) / -2);border-radius:var(--radius-md);overflow:hidden;background:var(--ivory-mid);box-shadow:0 24px 60px -24px rgba(20,18,16,.45);transform:translateX(calc(var(--a) * var(--step))) translateY(calc(var(--ad) * 14px)) rotate(calc(var(--a) * var(--tilt))) scale(calc(1 - var(--ad) * .08));transform-origin:50% 110%;z-index:calc(10 - var(--ad));opacity:calc(1.6 - var(--ad) * .45);transition:transform 620ms cubic-bezier(.2,.8,.2,1),opacity 420ms ease,filter 420ms ease;cursor:pointer}
+.fan__card[data-front]{cursor:default}
+.fan__card:not([data-front]){filter:saturate(.85) brightness(.92)}
+.fan__card img{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 25%;pointer-events:none;-webkit-user-drag:none}
+.fan__bar{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:24px}
+.fan__caption{margin:0;min-width:200px;text-align:center;font:400 20px/1.3 'Cormorant Garamond',Georgia,serif;color:var(--ink)}
+.fan__caption [data-fan-count]{display:block;font:500 11px/1 'Montserrat',sans-serif;letter-spacing:.3em;color:var(--gold-d);margin-bottom:6px}
+.fan__btn{display:inline-grid;place-items:center;width:48px;height:48px;flex:none;border-radius:50%;border:1px solid rgba(184,148,58,.4);background:var(--white);color:var(--ink);cursor:pointer;transition:background-color 200ms ease,transform 200ms ease}
+.fan__btn:hover{background:var(--ivory-mid)}
+.fan__btn:active{transform:scale(.96)}
+.fan__btn:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+@media(max-width:1024px){.fan{--cw:min(44vw,340px);--step:52%}}
+@media(max-width:640px){.fan{--cw:64vw;--step:38%;--tilt:6deg}.fan__stage{height:calc(var(--cw) * 1.25 + 40px)}.fan__card{top:16px}}
+html:not(.js) .fan__stage{display:flex;gap:16px;height:auto;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:12px}
+html:not(.js) .fan__card{position:static;flex:none;margin:0;transform:none;opacity:1;filter:none;scroll-snap-align:center}
+html:not(.js) .fan__bar{display:none}
+
+/* ---------- 8. O VÍDEO DO ESTÚDIO CRESCE COM A ROLAGEM ("Scroll media expansion hero", 21st.dev, como na Dra. Paula).
+   Rolagem nativa: a seção tem duas telas e a parte fixa usa position: sticky. */
+#video-sec.sxm{--p:0;position:relative;height:200vh;height:200svh;padding:0;background:var(--onyx);color:var(--ivory)}
+/* a parte fixa começa embaixo do menu (que já está na versão compacta, ~66 px, nesse ponto da página) */
+.sxm__pin{position:sticky;top:66px;height:calc(100vh - 66px);height:calc(100svh - 66px);overflow:hidden;display:grid;place-items:center;isolation:isolate}
+.sxm__bg{position:absolute;inset:0;z-index:-2;opacity:calc(1 - var(--p))}
+.sxm__bg img{width:100%;height:100%;object-fit:cover;object-position:30% 50%}
+.sxm__bg::after{content:"";position:absolute;inset:0;background:rgb(var(--onyx-rgb)/.6)}
+.sxm__media{position:absolute;left:50%;top:50%;z-index:-1;translate:-50% -50%;width:calc(300px + var(--p) * (min(94vw,1280px) - 300px));height:calc(400px + var(--p) * (min(100svh - 66px - 48px,820px) - 400px));border-radius:calc(20px - var(--p) * 4px);overflow:hidden;box-shadow:0 0 50px rgba(0,0,0,.3);background:var(--onyx)}
+.sxm__video{width:100%;height:100%;object-fit:cover;display:block}
+.sxm__shade{position:absolute;inset:0;background:rgba(0,0,0,calc(.5 - var(--p) * .4));pointer-events:none}
+.sxm__controls{position:absolute;right:16px;bottom:16px;display:flex;gap:8px}
+.sxm__btn{min-height:44px;padding:0 20px;border-radius:999px;border:1px solid rgba(255,255,255,.45);background:rgb(var(--onyx-rgb)/.6);color:var(--ivory);font:500 12px/1 'Montserrat',sans-serif;letter-spacing:.08em;cursor:pointer;opacity:0;visibility:hidden;transition:opacity 300ms var(--ease-out),visibility 0s 300ms}
+.sxm.is-open .sxm__btn,.sxm .sxm__pause{opacity:1;visibility:visible;transition:opacity 300ms var(--ease-out)}
+.sxm__btn:focus-visible{outline:2px solid var(--gold-l);outline-offset:3px}
+@media(hover:hover) and (pointer:fine){.sxm__btn:hover{background:rgb(var(--onyx-rgb)/.85)}}
+.sxm__text{display:grid;justify-items:center;gap:12px;text-align:center;pointer-events:none;opacity:calc(1 - var(--p) * 1.4);text-shadow:0 2px 18px rgba(0,0,0,.55)}
+.sxm__title{margin:0;display:grid;justify-items:center;font:300 clamp(40px,5.4vw,80px)/1.02 'Cormorant Garamond',Georgia,serif;color:var(--ivory)}
+.sxm__title .sxm__r{font-style:italic;color:var(--gold-l)}
+.sxm__eyebrow,.sxm__hint{margin:0;font:500 11px/1 'Montserrat',sans-serif;letter-spacing:.3em;text-transform:uppercase;color:rgba(245,240,232,.8)}
+.sxm__l{display:block;transform:translateX(calc(var(--p) * -40vw))}
+.sxm__r{display:block;transform:translateX(calc(var(--p) * 40vw))}
+@media(max-width:767px){.sxm__media{width:calc(240px + var(--p) * (92vw - 240px));height:calc(340px + var(--p) * (100svh - 66px - 32px - 340px))}}
+
+/* ---------- 9. MENU DO CELULAR: os itens entram em cascata curta (Solenime) */
+@keyframes menu-item-in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.mob.open>*:not(.mob-x){animation:menu-item-in 420ms var(--ease-out) both;animation-delay:calc(var(--i,0) * 40ms + 40ms)}
+
+/* ---------- 10. BOTÕES FLUTUANTES: entram de baixo só depois que o hero sai da tela (barra fixa do Solenime) */
+.float-btns{transition:transform 240ms var(--ease-out),opacity 240ms ease,visibility 0s linear 240ms}
+.float-btns[data-show="false"]{transform:translateY(calc(100% + 40px));opacity:0;visibility:hidden}
+.float-btns[data-show="true"]{transform:none;opacity:1;visibility:visible;transition:transform 240ms var(--ease-out),opacity 240ms ease,visibility 0s}
+
+/* ---------- reduzir movimento: tudo visível e parado */
+@media(prefers-reduced-motion:reduce){
+  #intro,#intro *{transition-duration:1ms!important;transition-delay:0ms!important}
+  #intro .sh-main{opacity:1;filter:none;animation:none!important}
+  #intro .sh-s{display:none}
+  #intro{transition:opacity 200ms ease!important}
+  #intro.is-out{clip-path:none;opacity:0}
+  .i-bg video{display:none}
+  .hc-enter,.hc-media,.hc-media img,.hc-callout,.hc-media picture{animation:none!important;opacity:1;transform:none;clip-path:none;translate:none}
+  [data-sobe] .sobe-palavra{transform:none!important;transition:none!important}
+  [data-wipe]{clip-path:none!important;transition:none!important}
+  [data-wipe] img{transform:none!important}
+  [data-wh] [data-w]{opacity:1!important}
+  .ba.is-hint .ba__before,.ba.is-hint .ba__handle{transition:none}
+  .fan__card{transition:opacity 200ms ease}
+  #video-sec.sxm{--p:1!important}
+  .sxm__text{position:absolute;left:0;right:0;top:32px;opacity:1;z-index:1}
+  .sxm__l,.sxm__r{transform:none}
+  .mob.open>*{animation:none!important}
+  .float-btns{transition:none}
+}
 </style>
 </head>
 <body>
@@ -870,11 +1122,75 @@ footer{padding:60px 0 30px;background:var(--ivory);border-top:1px solid var(--bo
 <div class="cur" id="C"></div>
 <div class="cur-r" id="CR"></div>
 
-<div id="loader">
-  <img src="assets/media/139c37c10c5f8f81.png" alt="Logo">
-  <div class="l-name">Concept Prime Studio</div>
-  <div class="l-bar"><div class="l-fill"></div></div>
+<!-- TELA DE ABERTURA (padrão Solenime + Dra. Paula): o vídeo da recepção ao fundo, o monograma e o nome
+     surgindo letra a letra. Uma vez por sessão, no máximo 4 s; enquanto ela está na frente, a entrada do hero espera. -->
+<div id="intro" aria-hidden="true">
+  <div class="i-bg">
+    <img src="assets/media/recepcao-900.webp" alt="" width="540" height="945">
+    <video muted loop playsinline preload="auto" poster="assets/media/recepcao-900.webp" data-intro-video>
+      <source src="assets/media/recepcao-loop.webm" type="video/webm">
+      <source src="assets/media/recepcao-loop.mp4" type="video/mp4">
+    </video>
+  </div>
+  <div class="i-mark">
+    <img class="i-logo" src="assets/media/139c37c10c5f8f81.png" alt="" width="84" height="84">
+    <span class="i-word" data-shutter>Concept Prime</span>
+    <span class="i-small">Studio</span>
+    <span class="i-line"><i></i></span>
+  </div>
+  <span class="i-foot">São Bernardo do Campo · SP</span>
 </div>
+<script>
+  (function () {
+    var html = document.documentElement, intro = document.getElementById('intro'), seen = false;
+    html.classList.add('js');
+    try { seen = sessionStorage.getItem('cp-intro') === '1'; } catch (e) {}
+    if (seen || !intro) { html.classList.add('no-intro'); if (intro) intro.remove(); return; }
+    html.classList.add('is-loading');
+    // o nome em letras, para o efeito de obturador (cada letra sai do desfoque enquanto três fatias atravessam)
+    var word = intro.querySelector('[data-shutter]');
+    var txt = word.textContent; word.textContent = '';
+    for (var i = 0; i < txt.length; i++) {
+      var c = txt[i] === ' ' ? ' ' : txt[i];
+      var s = document.createElement('span'); s.className = 'sh'; s.style.setProperty('--i', i);
+      s.innerHTML = '<span class="sh-main">' + c + '</span><span class="sh-s sh-t">' + c + '</span><span class="sh-s sh-m">' + c + '</span><span class="sh-s sh-b">' + c + '</span>';
+      word.appendChild(s);
+    }
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var saveData = navigator.connection && navigator.connection.saveData;
+    var video = intro.querySelector('[data-intro-video]');
+    if (reduce || saveData) { video.remove(); } else {
+      video.addEventListener('playing', function () { video.classList.add('is-on'); });
+      var p = video.play(); if (p && p.catch) p.catch(function () {});
+    }
+    var deep = !!location.hash;
+    try { if (!deep && 'scrollRestoration' in history) history.scrollRestoration = 'manual'; } catch (e) {}
+    var toTop = function () { if (!deep) window.scrollTo(0, 0); };
+    toTop();
+    var MIN = reduce ? 400 : 2400, MAX = 4000, start = Date.now(), finished = false;
+    var wait = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
+    var font = document.fonts && document.fonts.load ? document.fonts.load('italic 400 1em "Cormorant Garamond"') : Promise.resolve();
+    var ready = function () { intro.classList.add('is-ready'); };
+    Promise.race([font, wait(700)]).then(function () { setTimeout(ready, 16); }, function () { setTimeout(ready, 16); });
+    function finish() {
+      if (finished) return; finished = true; ready();
+      setTimeout(function () {
+        intro.classList.add('is-done');
+        setTimeout(function () {
+          toTop();
+          intro.classList.add('is-out');
+          html.classList.remove('is-loading');
+          try { history.scrollRestoration = 'auto'; } catch (e) {}
+          try { sessionStorage.setItem('cp-intro', '1'); } catch (e) {}
+          setTimeout(function () { if (video && video.pause) video.pause(); intro.remove(); }, 1000);
+        }, 340);
+      }, Math.max(0, MIN - (Date.now() - start)));
+    }
+    window.addEventListener('load', function () { Promise.race([document.fonts ? document.fonts.ready : Promise.resolve(), wait(1200)]).then(finish); });
+    setTimeout(finish, MAX);
+  })();
+</script>
+<noscript><style>#intro{display:none}</style></noscript>
 
 <div class="grain-over"></div>
 
@@ -905,18 +1221,37 @@ footer{padding:60px 0 30px;background:var(--ivory);border-top:1px solid var(--bo
     <button onclick="switchView('booking');toggleMobileMenu(false)" style="background:linear-gradient(135deg,rgba(20,18,16,0.48) 0%,rgba(42,37,31,0.40) 100%);border:1px solid rgba(184,148,58,0.35);border-radius:14px;font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--ink);cursor:pointer;padding:10px 32px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 0 0 1px rgba(255,255,255,0.12) inset,0 1px 0 rgba(255,255,255,0.18) inset,0 4px 16px rgba(0,0,0,0.12);transition:transform .25s,filter .25s;" onmouseover="this.style.background='linear-gradient(135deg,rgba(184,148,58,0.55) 0%,rgba(138,108,32,0.6) 100%)'" onmouseout="this.style.background='linear-gradient(135deg,rgba(20,18,16,0.48) 0%,rgba(42,37,31,0.40) 100%)'">Agendar</button>
   </div>
 
-  <section id="hero">
-    <div class="h-inner">
-      <span class="h-ey">Elegância em cada detalhe</span>
-      <div class="h-logo"><img src="assets/media/139c37c10c5f8f81.png" alt="Concept Prime"></div>
-      <h1 class="h-t1">Realçando sua<br><em>Beleza Única</em></h1>
-      <p class="h-sub">Maquiagem · Penteado · Manicure · Extensões</p>
-      <div class="h-btns">
-        <button onclick="switchView('booking')" class="btn-dk">Agendar Agora</button>
-        <a href="#services" class="btn-gh">Ver Serviços</a>
+  <!-- HERO (padrão Solenime/Dra. Paula, referência MotionSites "Aesthetic Dental Clinic"): a recepção num quadro
+       de cantos arredondados, véu de ônix da esquerda, título em três linhas com a do meio em itálico dourado,
+       anotação apontando o letreiro e três destaques. Entrada em cascata depois da tela de abertura. -->
+  <section id="hero" class="hc" aria-labelledby="hero-h">
+    <div class="hc-frame">
+      <div class="hc-media">
+        <picture>
+          <source media="(max-width: 640px)" srcset="assets/media/recepcao-900.webp" type="image/webp">
+          <source srcset="assets/media/recepcao-1344.webp" type="image/webp">
+          <img src="assets/media/recepcao-1344.jpg" alt="Recepção do Concept Prime Studio: balcão de madeira ripada com luz embaixo, parede de mármore e o letreiro dourado CP" width="768" height="1344" fetchpriority="high">
+        </picture>
+      </div>
+      <div class="hc-veil" aria-hidden="true"></div>
+      <p class="hc-callout"><span class="hc-dot" aria-hidden="true"></span><span class="hc-card"><strong>Nossa recepção</strong><span>São Bernardo do Campo · SP</span></span></p>
+      <div class="hc-content">
+        <div class="hc-text">
+          <p class="hc-badge hc-enter" style="--i:0"><img src="assets/media/139c37c10c5f8f81.png" alt="" width="30" height="30"><span class="hc-badge__name">Concept Prime Studio</span> <b>São Bernardo do Campo</b></p>
+          <h1 id="hero-h" class="hc-title hc-enter" style="--i:1"><span>Realçando sua</span> <em>beleza única</em> <span>em cada detalhe.</span></h1>
+          <p class="hc-lead hc-enter" style="--i:2">Maquiagem · Penteado · Manicure · Extensões. Sobrancelha, cílios e coloração no mesmo estúdio, com hora marcada.</p>
+          <div class="hc-btns hc-enter" style="--i:3" data-hero-actions>
+            <button onclick="switchView('booking')" class="btn-dk">Agendar Agora <svg class="btn-arrow" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10m-4-4 4 4-4 4" stroke="currentColor" stroke-width="1.6"/></svg></button>
+            <a href="#services" class="btn-gh">Ver Serviços</a>
+          </div>
+          <dl class="hc-facts hc-enter" style="--i:4">
+            <div><dt>Maquiagem</dt><dd>Social, noiva e editorial</dd></div>
+            <div><dt>Extensão</dt><dd>Volume e naturalidade</dd></div>
+            <div><dt>Manicure</dt><dd>Gel, acrílico e nail art</dd></div>
+          </dl>
+        </div>
       </div>
     </div>
-    <div class="h-sc"><span>Scroll</span><div class="h-sc-bar"></div></div>
   </section>
 
   <section id="about">
@@ -924,7 +1259,7 @@ footer{padding:60px 0 30px;background:var(--ivory);border-top:1px solid var(--bo
       <div class="ab-grid">
         <div class="ab-img rv" style="position:relative;">
           <div class="orn tl"></div><div class="orn br"></div>
-          <div class="team-slider-wrap" style="position:relative;overflow:hidden;aspect-ratio:3/4;border-radius:20px;background:#141210;">
+          <div class="team-slider-wrap" data-wipe-on style="position:relative;overflow:hidden;aspect-ratio:3/4;border-radius:20px;background:#141210;">
             <canvas id="teamCanvas" style="position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity 1.2s ease;display:block;"></canvas>
             <div class="team-slide-info" style="position:absolute;bottom:0;left:0;right:0;z-index:4;background:linear-gradient(to top,rgba(20,18,16,.7),transparent);padding:28px 24px 22px;">
               <span id="teamName" style="display:block;font-family:'Cormorant Garamond',serif;font-size:20px;color:#F5F0E8;font-weight:300;letter-spacing:.08em;"></span>
@@ -936,7 +1271,7 @@ footer{padding:60px 0 30px;background:var(--ivory);border-top:1px solid var(--bo
                 <div class="ab-txt rv d2">
           <span class="sec-n">Nº 01 — O Studio</span>
           <h2 class="T">Onde a sofisticação encontra o <em>cuidado</em>.</h2>
-          <p class="ab-q">"Nossa missão é transformar cada atendimento em um ritual de autoestima e bem-estar."</p>
+          <p class="ab-q" data-wh>"Nossa missão é transformar cada atendimento em um ritual de autoestima e bem-estar."</p>
           <p class="ab-p">No <em>Concept Prime Studio</em>, acreditamos que a beleza é uma expressão individual. Nossa equipe é especializada em técnicas que respeitam sua identidade enquanto elevam seu estilo.</p>
           <div class="stats">
             <div class="stat"><span class="stat-n">10+</span><span class="stat-l">Anos de<br>Expertise</span></div>
@@ -981,27 +1316,37 @@ footer{padding:60px 0 30px;background:var(--ivory);border-top:1px solid var(--bo
         <h2 class="T">Antes & <em>Depois</em></h2>
         <div class="hairline" style="width:44px;margin:18px auto 0"></div>
       </div>
-      <div class="ba-grid rv d1">
-        <div class="ba-card" id="ba1">
-          <img class="ib" src="assets/media/f4aee05c137d3b2f.jpg" alt="Antes" loading="lazy" decoding="async">
-          <img class="ia" src="assets/media/4e77cea303831c49.jpg" alt="Depois" loading="lazy" decoding="async">
-          <div class="ba-border"></div>
-          <span class="ba-tag bt">Antes</span><span class="ba-tag at">Depois</span>
-          <div class="ba-bot"><span class="ba-lbl">Extensão Loiro</span><span class="ba-hint">Hover</span></div>
+      <!-- Arraste a linha para comparar (antes à esquerda, depois à direita); toque num ponto ou use as setas do teclado -->
+      <div class="ba-grid ba-cmp rv d1">
+        <div class="ba-case">
+          <div class="ba" data-ba id="ba1" style="--pos:50%">
+            <div class="ba__layer ba__after" aria-hidden="true"><img src="assets/media/4e77cea303831c49.jpg" alt="" loading="lazy" decoding="async"></div>
+            <div class="ba__layer ba__before"><img src="assets/media/f4aee05c137d3b2f.jpg" alt="Antes e depois: Extensão Loiro" loading="lazy" decoding="async"></div>
+            <span class="ba__tag ba__tag--l" aria-hidden="true">Antes</span><span class="ba__tag ba__tag--r" aria-hidden="true">Depois</span>
+            <span class="ba__handle" aria-hidden="true"><span class="ba__knob"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M9 6l-5 6 5 6M15 6l5 6-5 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span>
+            <input class="ba__range" id="ba1-range" type="range" min="0" max="100" value="50" step="1" aria-valuetext="metade antes, metade depois">
+          </div>
+          <label class="ba-case__name" for="ba1-range">Extensão Loiro</label>
         </div>
-        <div class="ba-card" id="ba2">
-          <img class="ib" src="assets/media/10b9bda407c064f0.jpg" alt="Antes" loading="lazy" decoding="async">
-          <img class="ia" src="assets/media/57c8cca5e03eecc2.jpg" alt="Depois" loading="lazy" decoding="async">
-          <div class="ba-border"></div>
-          <span class="ba-tag bt">Antes</span><span class="ba-tag at">Depois</span>
-          <div class="ba-bot"><span class="ba-lbl">Transformação Prime</span><span class="ba-hint">Hover</span></div>
+        <div class="ba-case">
+          <div class="ba" data-ba id="ba2" style="--pos:50%">
+            <div class="ba__layer ba__after" aria-hidden="true"><img src="assets/media/57c8cca5e03eecc2.jpg" alt="" loading="lazy" decoding="async"></div>
+            <div class="ba__layer ba__before"><img src="assets/media/10b9bda407c064f0.jpg" alt="Antes e depois: Transformação Prime" loading="lazy" decoding="async"></div>
+            <span class="ba__tag ba__tag--l" aria-hidden="true">Antes</span><span class="ba__tag ba__tag--r" aria-hidden="true">Depois</span>
+            <span class="ba__handle" aria-hidden="true"><span class="ba__knob"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M9 6l-5 6 5 6M15 6l5 6-5 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span>
+            <input class="ba__range" id="ba2-range" type="range" min="0" max="100" value="50" step="1" aria-valuetext="metade antes, metade depois">
+          </div>
+          <label class="ba-case__name" for="ba2-range">Transformação Prime</label>
         </div>
-        <div class="ba-card" id="ba3">
-          <img class="ib" src="assets/media/46c1186649d415a0.jpg" alt="Antes" loading="lazy" decoding="async">
-          <img class="ia" src="assets/media/a44a6ddf40dc9242.jpg" alt="Depois" loading="lazy" decoding="async">
-          <div class="ba-border"></div>
-          <span class="ba-tag bt">Antes</span><span class="ba-tag at">Depois</span>
-          <div class="ba-bot"><span class="ba-lbl">Cabelo Natural</span><span class="ba-hint">Hover</span></div>
+        <div class="ba-case">
+          <div class="ba" data-ba id="ba3" style="--pos:50%">
+            <div class="ba__layer ba__after" aria-hidden="true"><img src="assets/media/a44a6ddf40dc9242.jpg" alt="" loading="lazy" decoding="async"></div>
+            <div class="ba__layer ba__before"><img src="assets/media/46c1186649d415a0.jpg" alt="Antes e depois: Cabelo Natural" loading="lazy" decoding="async"></div>
+            <span class="ba__tag ba__tag--l" aria-hidden="true">Antes</span><span class="ba__tag ba__tag--r" aria-hidden="true">Depois</span>
+            <span class="ba__handle" aria-hidden="true"><span class="ba__knob"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M9 6l-5 6 5 6M15 6l5 6-5 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span>
+            <input class="ba__range" id="ba3-range" type="range" min="0" max="100" value="50" step="1" aria-valuetext="metade antes, metade depois">
+          </div>
+          <label class="ba-case__name" for="ba3-range">Cabelo Natural</label>
         </div>
       </div>
     </div>
@@ -1016,7 +1361,7 @@ footer{padding:60px 0 30px;background:var(--ivory);border-top:1px solid var(--bo
         <div class="hairline" style="width:44px;margin:18px auto 0"></div>
       </div>
     </div>
-    <div class="man-carousel rv d1" id="manCarousel">
+    <div class="man-carousel rv d1" id="manCarousel" data-wipe-on>
       <div class="man-track" id="manTrack">
         <div class="man-slide">
           <img src="assets/media/3acc8ecbe53df357.jpg" alt="Manicure Arte" loading="lazy" decoding="async">
@@ -1050,16 +1395,18 @@ footer{padding:60px 0 30px;background:var(--ivory);border-top:1px solid var(--bo
         <span class="sec-n">Nº 05 — Portfólio</span>
         <h2 class="T">Galeria <em>Prime</em></h2>
       </div>
-      <div class="gal-wrap rv d1">
-        <div class="gal-track">
-          <div class="gs on" data-l="Extensão Ombré"><img src="assets/media/a44a6ddf40dc9242.jpg" alt="G1" loading="lazy" decoding="async"></div>
-          <div class="gs" data-l="Transformação Completa"><img src="assets/media/4e77cea303831c49.jpg" alt="G2" loading="lazy" decoding="async"></div>
-          <div class="gs" data-l="Beleza Prime"><img src="assets/media/57c8cca5e03eecc2.jpg" alt="G3" loading="lazy" decoding="async"></div>
+      <!-- Galeria em leque (como na Dra. Paula): a foto da frente reta, as vizinhas abertas para os lados.
+           Setas, arraste no celular, teclado (← →) ou clique numa foto de lado. -->
+      <div class="fan rv d1" data-fan role="region" aria-roledescription="carrossel" aria-label="Galeria Prime">
+        <div class="fan__stage" data-fan-stage tabindex="0">
+          <figure class="fan__card" data-fan-card style="--d:0" data-l="Extensão Ombré"><img src="assets/media/a44a6ddf40dc9242.jpg" alt="Extensão ombré loira, cabelo longo ondulado visto de costas" loading="lazy" decoding="async"></figure>
+          <figure class="fan__card" data-fan-card style="--d:1" data-l="Transformação Completa"><img src="assets/media/4e77cea303831c49.jpg" alt="Cabelo longo ondulado com mechas loiras diante do arco dourado" loading="lazy" decoding="async"></figure>
+          <figure class="fan__card" data-fan-card style="--d:-1" data-l="Beleza Prime"><img src="assets/media/57c8cca5e03eecc2.jpg" alt="Cabelo castanho liso e longo diante do arco dourado com o nome Prime" loading="lazy" decoding="async"></figure>
         </div>
-        <div class="gal-over-grad"></div>
-        <div class="gal-meta">
-          <div class="gal-info"><span class="gal-num" id="gN">01 / 03</span><h3 class="gal-title" id="gL">Extensão Ombré</h3></div>
-          <div class="gal-dots" id="gD"></div>
+        <div class="fan__bar">
+          <button class="fan__btn" type="button" data-fan-prev aria-label="Foto anterior"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          <p class="fan__caption" aria-live="polite"><span data-fan-count>01 / 03</span><span data-fan-label>Extensão Ombré</span></p>
+          <button class="fan__btn" type="button" data-fan-next aria-label="Próxima foto"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         </div>
       </div>
     </div>
@@ -1091,7 +1438,7 @@ footer{padding:60px 0 30px;background:var(--ivory);border-top:1px solid var(--bo
             <li class="ei"><span class="ei-k">Atendimento</span><span class="ei-v">Agenda exclusiva e personalizada.</span></li>
           </ul>
         </div>
-        <div class="exp-img rv d2">
+        <div class="exp-img rv d2" data-wipe-on>
           <div class="exp-orn"></div>
           <img src="assets/media/f4aee05c137d3b2f.jpg" alt="Experience" loading="lazy" decoding="async">
         </div>
@@ -1099,20 +1446,23 @@ footer{padding:60px 0 30px;background:var(--ivory);border-top:1px solid var(--bo
     </div>
   </section>
 
-  <section id="video-sec">
-    <div class="container">
-      <div class="v-heading rv">
-        <span class="sec-n">Nº 08 — Conheça o Studio</span>
-        <h2 class="v-sanctuary">Bem-vindo ao nosso<br><em>Santuário</em></h2>
-      </div>
-      <div class="v-wrap rv d1" role="button" tabindex="0" aria-label="Reproduzir vídeo do salão" onclick="tToggle()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();tToggle()}">
-        <video id="tVid" loop muted playsinline preload="none">
-          <source src="assets/media/81332ec9e92f512b.mp4" type="video/mp4">
-        </video>
-        <div class="v-over" id="tOv">
-          <div class="v-play"><svg viewBox="0 0 24 24"><path d="M5 3l14 9-14 9V3z"/></svg></div>
+  <!-- O ESTÚDIO: o vídeo cresce de cartão até a tela cheia enquanto a página rola e o título se abre para os lados
+       ("Scroll media expansion hero" do 21st.dev, como na Dra. Paula). Rolagem nativa, sem travar a página. -->
+  <section id="video-sec" class="sxm" aria-labelledby="video-h">
+    <div class="sxm__pin">
+      <div class="sxm__bg" aria-hidden="true"><img src="assets/media/recepcao-1344.webp" alt="" loading="lazy" decoding="async"></div>
+      <div class="sxm__media">
+        <video class="sxm__video" muted loop playsinline preload="none" poster="assets/media/estudio-poster.jpg" aria-label="Vídeo: passeio pelo Concept Prime Studio" width="540" height="960" data-src="assets/media/estudio-loop.mp4" data-full="assets/media/81332ec9e92f512b.mp4"></video>
+        <div class="sxm__shade" aria-hidden="true"></div>
+        <div class="sxm__controls">
+          <button class="sxm__btn sxm__pause" type="button" aria-pressed="false">Pausar vídeo</button>
+          <button class="sxm__btn sxm__sound" type="button" aria-pressed="false">Ativar som</button>
         </div>
-        <button class="v-mute" id="tMute" onclick="event.stopPropagation();tMuteToggle()">Som off</button>
+      </div>
+      <div class="sxm__text">
+        <p class="sxm__eyebrow sxm__l">Nº 08 — Conheça o Studio</p>
+        <h2 id="video-h" class="sxm__title"><span class="sxm__l">Bem-vindo ao nosso</span> <span class="sxm__r">Santuário</span></h2>
+        <p class="sxm__hint sxm__r">Role para entrar</p>
       </div>
     </div>
   </section>
@@ -1133,7 +1483,7 @@ footer{padding:60px 0 30px;background:var(--ivory);border-top:1px solid var(--bo
           </div>
         </div>
         <div><h4 class="ft-hd">Links</h4><ul class="ft-ul"><li><a href="#hero">Início</a></li><li><a href="#about">Sobre</a></li><li><a href="#services">Serviços</a></li><li><button onclick="switchView('booking')" style="background:linear-gradient(135deg,rgba(42,37,31,0.22) 0%,rgba(20,18,16,0.18) 100%);border:1px solid rgba(184,148,58,0.2);border-radius:6px;font-size:12px;color:var(--muted);cursor:pointer;text-align:left;padding:5px 12px;letter-spacing:.03em;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);transition:color .3s,border-color .3s,background .3s;" onmouseover="this.style.color='var(--gold)';this.style.borderColor='rgba(184,148,58,0.4)'" onmouseout="this.style.color='var(--muted)';this.style.borderColor='rgba(184,148,58,0.2)'">Agendar</button></li></ul></div>
-        <div><h4 class="ft-hd">Contato</h4><ul class="ft-ul"><li><a href="https://wa.me/5511933983001" target="_blank">+55 11 93398-3001</a></li><li>São Paulo, SP</li></ul></div>
+        <div><h4 class="ft-hd">Contato</h4><ul class="ft-ul"><li><a href="https://wa.me/5511933983001" target="_blank">+55 11 93398-3001</a></li><li>São Bernardo do Campo, SP</li></ul></div>
       </div>
       <div class="ft-bot"><p>© 2026 Concept Prime Studio. Todos os direitos reservados.</p></div>
     </div>
@@ -1272,7 +1622,6 @@ function switchView(v){
   if(heading){heading.setAttribute('tabindex','-1');heading.focus({preventScroll:true})}
 }
 
-window.addEventListener('DOMContentLoaded',()=>{setTimeout(()=>document.getElementById('loader').classList.add('gone'),180)});
 
 const C=document.getElementById('C'),CR=document.getElementById('CR');
 document.addEventListener('mousemove',e=>{
@@ -1290,17 +1639,7 @@ window.addEventListener('scroll',()=>{
   }
 });
 
-const obs=new IntersectionObserver(ents=>{ents.forEach(e=>{if(e.isIntersecting)e.target.classList.add('on')})},({threshold:0.1}));
-document.querySelectorAll('.rv').forEach(r=>obs.observe(r));
 
-['ba1','ba2','ba3'].forEach(id=>{
-  const el=document.getElementById(id);
-  if(el){
-    el.addEventListener('mouseenter',()=>el.classList.add('fl'));
-    el.addEventListener('mouseleave',()=>el.classList.remove('fl'));
-    el.addEventListener('touchstart',()=>el.classList.toggle('fl'),{passive:true});
-  }
-});
 
 // MANICURE CAROUSEL
 let manCur=0;
@@ -1313,41 +1652,6 @@ function manGo(i){
 function manMove(dir){manGo((manCur+dir+manTotal)%manTotal)}
 setInterval(()=>manMove(1),4500);
 
-// GALLERY
-const gSlides=document.querySelectorAll('.gs'),gDots=document.getElementById('gD'),gN=document.getElementById('gN'),gL=document.getElementById('gL');
-let gCur=0,gTimer;
-gSlides.forEach((_,i)=>{
-  const d=document.createElement('button');
-  d.className='gd'+(i===0?' on':'');
-  d.setAttribute('aria-label',`Ver imagem ${i+1}`);
-  if(i===0)d.setAttribute('aria-current','true');
-  d.onclick=()=>goG(i);
-  gDots.appendChild(d);
-});
-function goG(i){
-  gSlides[gCur].classList.remove('on');
-  document.querySelectorAll('.gd')[gCur].classList.remove('on');
-  document.querySelectorAll('.gd')[gCur].removeAttribute('aria-current');
-  gCur=i;
-  gSlides[gCur].classList.add('on');
-  document.querySelectorAll('.gd')[gCur].classList.add('on');
-  document.querySelectorAll('.gd')[gCur].setAttribute('aria-current','true');
-  gN.textContent='0'+(gCur+1)+' / 0'+gSlides.length;
-  gL.innerHTML=gSlides[gCur].dataset.l;
-  clearInterval(gTimer);
-  gTimer=setInterval(()=>goG((gCur+1)%gSlides.length),5500);
-}
-gTimer=setInterval(()=>goG((gCur+1)%gSlides.length),5500);
-
-// VIDEO
-let tPlay=false;
-const tVid=document.getElementById('tVid'),tOv=document.getElementById('tOv'),tMute=document.getElementById('tMute');
-function tToggle(){
-  if(tPlay){tVid.pause();tPlay=false;tOv.classList.remove('h');tMute.classList.remove('vis')}
-  else{tVid.play();tPlay=true;tOv.classList.add('h');tMute.classList.add('vis')}
-  document.querySelector('.v-wrap').setAttribute('aria-label',tPlay?'Pausar vídeo do salão':'Reproduzir vídeo do salão');
-}
-function tMuteToggle(){tVid.muted=!tVid.muted;tMute.textContent=tVid.muted?'Som off':'Som on'}
 
 // BOOKING
 let curStep=1;
@@ -1701,6 +2005,137 @@ function sendWA() {
 
   window.open('https://wa.me/5511933983001?text=' + encodeURIComponent(msg), '_blank', 'noopener');
 }
+</script>
+
+<script>
+/* ==========================================================================
+   MOTION DAY+ (Clínica Solenime + Dra. Paula Moura), adaptado ao Concept Prime.
+   Sem bibliotecas. Com "reduzir movimento" tudo fica visível e parado.
+   ========================================================================== */
+(function(){
+  var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var hasIO='IntersectionObserver' in window;
+  var once=function(el,cb,opts){ if(!hasIO){cb();return;} var io=new IntersectionObserver(function(es){ if(es.some(function(e){return e.isIntersecting})){io.disconnect();cb();} },opts); io.observe(el); };
+
+  /* 1. Títulos que sobem palavra a palavra (Solenime, TituloSobe): cada palavra numa máscara, 80 ms entre elas */
+  document.querySelectorAll('#view-home h2.T, #view-home h2.TL').forEach(function(h){
+    var n=0;
+    (function walk(node){
+      Array.from(node.childNodes).forEach(function(c){
+        if(c.nodeType===3){
+          var parts=c.textContent.split(/(\s+)/), frag=document.createDocumentFragment();
+          parts.forEach(function(w){
+            if(!w)return;
+            if(/^\s+$/.test(w)){frag.appendChild(document.createTextNode(' '));return;}
+            var m=document.createElement('span');m.className='sobe-mask';
+            var p=document.createElement('span');p.className='sobe-palavra';p.style.setProperty('--i',n++);p.textContent=w;
+            m.appendChild(p);frag.appendChild(m);
+          });
+          c.replaceWith(frag);
+        } else if(c.nodeType===1 && c.tagName!=='BR'){ walk(c); }
+      });
+    })(h);
+    if(reduce)return;
+    h.setAttribute('data-sobe','espera');
+    once(h,function(){h.setAttribute('data-sobe','sim');},{threshold:.35});
+  });
+
+  /* 2. Fotos que abrem de baixo para cima e assentam ao entrar na tela (Solenime, .wipe) */
+  document.querySelectorAll('[data-wipe-on]').forEach(function(el){
+    if(reduce)return;
+    el.setAttribute('data-wipe','espera');
+    // observa o pai: um elemento 100% recortado (clip-path) nunca "entra na tela" para o IntersectionObserver
+    once(el.parentElement||el,function(){el.setAttribute('data-wipe','sim');},{threshold:.2});
+  });
+
+  /* 3. Word-highlight: as palavras da frase acendem de 22% a 100% conforme ela passa pela tela */
+  document.querySelectorAll('[data-wh]').forEach(function(el){
+    var text=el.textContent.trim(); el.setAttribute('aria-label',text); el.textContent='';
+    var words=text.split(' ').map(function(w,i,a){ var s=document.createElement('span'); s.setAttribute('data-w',''); s.setAttribute('aria-hidden','true'); s.textContent=w+(i<a.length-1?' ':''); el.appendChild(s); return s; });
+    if(reduce){words.forEach(function(w){w.style.opacity=1});return;}
+    var raf=0;
+    var update=function(){ raf=0; var r=el.getBoundingClientRect(), vh=innerHeight, start=vh*.85, end=vh*.45-r.height;
+      var p=Math.min(1,Math.max(0,(start-r.top)/(start-end))), lit=p*words.length;
+      for(var i=0;i<words.length;i++){ var o=Math.min(1,Math.max(0,lit-i)); words[i].style.opacity=String(.22+.78*o); } };
+    addEventListener('scroll',function(){ if(!raf) raf=requestAnimationFrame(update); },{passive:true});
+    addEventListener('resize',update); update();
+  });
+
+  /* 4. Hero: a foto da recepção desce mais devagar que a página (parallax leve, até 6% do quadro, Dra. Paula) */
+  var media=document.querySelector('.hc-media');
+  if(media && !reduce){
+    var hraf=0;
+    var paint=function(){ hraf=0; var h=media.offsetHeight; if(scrollY>h*1.2)return; media.style.setProperty('--hc-py',Math.min(scrollY*.12,h*.06).toFixed(1)+'px'); };
+    addEventListener('scroll',function(){ if(!hraf) hraf=requestAnimationFrame(paint); },{passive:true});
+    paint();
+  }
+
+  /* 5. Antes e depois arrastável (Dra. Paula): arraste, toque num ponto ou setas do teclado; um aceno ao aparecer */
+  document.querySelectorAll('[data-ba]').forEach(function(el){
+    var range=el.querySelector('.ba__range');
+    var set=function(v){ v=Math.max(0,Math.min(100,v)); el.style.setProperty('--pos',v+'%'); range.value=String(Math.round(v)); range.setAttribute('aria-valuetext',Math.round(v)+'% antes, '+(100-Math.round(v))+'% depois'); };
+    var at=function(x){ var r=el.getBoundingClientRect(); return (x-r.left)/r.width*100; };
+    range.addEventListener('input',function(){ set(Number(range.value)); });
+    var id=-1,x0=0,y0=0,horiz=false;
+    el.addEventListener('pointerdown',function(e){ id=e.pointerId;x0=e.clientX;y0=e.clientY;horiz=e.pointerType==='mouse'; if(horiz){el.classList.add('is-dragging');set(at(e.clientX));} });
+    el.addEventListener('pointermove',function(e){ if(e.pointerId!==id)return;
+      if(!horiz&&Math.abs(e.clientX-x0)>6&&Math.abs(e.clientX-x0)>Math.abs(e.clientY-y0)){horiz=true;el.classList.add('is-dragging');try{el.setPointerCapture(id)}catch(_){}}
+      if(horiz)set(at(e.clientX)); });
+    var end=function(e){ if(e.pointerId!==id)return;
+      if(!horiz&&Math.abs(e.clientX-x0)<6&&Math.abs(e.clientY-y0)<6&&e.type==='pointerup')set(at(e.clientX));
+      id=-1;horiz=false;el.classList.remove('is-dragging'); };
+    el.addEventListener('pointerup',end); el.addEventListener('pointercancel',end);
+    el.addEventListener('keydown',function(e){ if(e.target!==range){ if(e.key==='ArrowLeft'){set(Number(range.value)-5);} if(e.key==='ArrowRight'){set(Number(range.value)+5);} } });
+    if(!reduce) once(el,function(){ el.classList.add('is-hint'); setTimeout(function(){set(32)},250); setTimeout(function(){set(50)},1000); setTimeout(function(){el.classList.remove('is-hint')},1750); },{threshold:.6});
+  });
+
+  /* 6. Galeria em leque (Dra. Paula) */
+  document.querySelectorAll('[data-fan]').forEach(function(root){
+    var stage=root.querySelector('[data-fan-stage]'), cards=Array.from(root.querySelectorAll('[data-fan-card]'));
+    var count=root.querySelector('[data-fan-count]'), label=root.querySelector('[data-fan-label]'), n=cards.length, cur=0, moved=false;
+    var rel=function(i){ var d=(i-cur)%n; if(d>n/2)d-=n; if(d<-n/2)d+=n; return d; };
+    var pad=function(x){ return (x<10?'0':'')+x; };
+    var paint=function(){ cards.forEach(function(c,i){ var d=rel(i); c.style.setProperty('--d',String(d)); c.toggleAttribute('data-front',d===0); if(d===0)c.removeAttribute('aria-hidden'); else c.setAttribute('aria-hidden','true'); });
+      count.textContent=pad(cur+1)+' / '+pad(n); label.textContent=cards[cur].dataset.l||''; };
+    var go=function(to){ cur=((to%n)+n)%n; paint(); };
+    root.querySelector('[data-fan-prev]').addEventListener('click',function(){go(cur-1)});
+    root.querySelector('[data-fan-next]').addEventListener('click',function(){go(cur+1)});
+    cards.forEach(function(c,i){ c.addEventListener('click',function(){ if(!moved&&i!==cur)go(i); }); });
+    stage.addEventListener('keydown',function(e){ if(e.key==='ArrowLeft'){e.preventDefault();go(cur-1)} if(e.key==='ArrowRight'){e.preventDefault();go(cur+1)} });
+    var x0=0,y0=0,down=false;
+    stage.addEventListener('pointerdown',function(e){down=true;moved=false;x0=e.clientX;y0=e.clientY;});
+    stage.addEventListener('pointermove',function(e){ if(down&&Math.abs(e.clientX-x0)>8)moved=true; });
+    stage.addEventListener('pointerup',function(e){ if(!down)return; down=false; var dx=e.clientX-x0,dy=e.clientY-y0; if(Math.abs(dx)>40&&Math.abs(dx)>Math.abs(dy))go(cur+(dx<0?1:-1)); setTimeout(function(){moved=false},0); });
+    stage.addEventListener('pointercancel',function(){down=false});
+    paint();
+  });
+
+  /* 7. O vídeo do estúdio cresce com a rolagem (Dra. Paula); só baixa perto da seção e toca mudo enquanto ela está na tela */
+  document.querySelectorAll('.sxm').forEach(function(sec){
+    var video=sec.querySelector('.sxm__video'), sound=sec.querySelector('.sxm__sound'), pause=sec.querySelector('.sxm__pause');
+    var paused=false, ticking=false, loaded=false, full=false, saveData=navigator.connection&&navigator.connection.saveData;
+    var set=function(p){ sec.style.setProperty('--p',p.toFixed(4)); sec.classList.toggle('is-open',p>.92); };
+    var update=function(){ ticking=false; var r=sec.getBoundingClientRect(), travel=Math.max(1,sec.offsetHeight-innerHeight); set(Math.min(1,Math.max(0,-r.top/(travel*.8)))); };
+    if(reduce){ set(1); } else { update(); addEventListener('scroll',function(){ if(!ticking){ticking=true;requestAnimationFrame(update);} },{passive:true}); addEventListener('resize',update); }
+    if(hasIO){ new IntersectionObserver(function(es){ es.forEach(function(e){
+      if(e.isIntersecting){ if(!loaded&&!saveData){video.src=video.dataset.src;loaded=true;} if(loaded&&!reduce&&!paused)video.play().catch(function(){}); }
+      else if(loaded){ video.pause(); } }); },{rootMargin:'200px 0px'}).observe(sec); }
+    if(reduce){ paused=true; pause.setAttribute('aria-pressed','true'); pause.textContent='Reproduzir vídeo'; }
+    pause.addEventListener('click',function(){ if(!loaded){video.src=video.dataset.src;loaded=true;} paused=!paused; if(paused)video.pause(); else video.play().catch(function(){});
+      pause.setAttribute('aria-pressed',String(paused)); pause.textContent=paused?'Reproduzir vídeo':'Pausar vídeo'; });
+    sound.addEventListener('click',function(){ loaded=true; if(!full){video.src=video.dataset.full;video.loop=false;full=true;} var on=video.muted; video.muted=!on;
+      if(on){ video.currentTime=0; paused=false; pause.setAttribute('aria-pressed','false'); pause.textContent='Pausar vídeo'; video.play().catch(function(){video.controls=true;}); }
+      sound.setAttribute('aria-pressed',String(on)); sound.textContent=on?'Desativar som':'Ativar som'; });
+  });
+
+  /* 8. Menu do celular: os itens entram em cascata (Solenime) */
+  document.querySelectorAll('#mob > :not(.mob-x)').forEach(function(a,i){ a.style.setProperty('--i',i); });
+
+  /* 9. Botões flutuantes (WhatsApp e Instagram): só aparecem depois que os botões do hero saem da tela */
+  var floats=document.querySelector('.float-btns'), heroActions=document.querySelector('[data-hero-actions]');
+  if(floats&&heroActions&&hasIO){ floats.setAttribute('data-show','false');
+    new IntersectionObserver(function(es){ floats.setAttribute('data-show',String(!es[0].isIntersecting)); }).observe(heroActions); }
+})();
 </script>
 </body>
 </html>
